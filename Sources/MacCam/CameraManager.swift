@@ -9,6 +9,7 @@ class CameraManager: NSObject, ObservableObject {
 
     @Published var isAuthorized = false
     @Published var showSaveConfirmation = false
+    @Published var showFlash = false
     @Published var lastSavedURL: URL?
 
     override init() {
@@ -73,6 +74,16 @@ class CameraManager: NSObject, ObservableObject {
     }
 
     func capturePhoto() {
+        // Ensure save dir exists before capture
+        let saveDir = SettingsManager.shared.saveDirectory
+        try? FileManager.default.createDirectory(at: saveDir, withIntermediateDirectories: true)
+
+        // Flash
+        showFlash = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+            self?.showFlash = false
+        }
+
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
     }

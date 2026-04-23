@@ -4,29 +4,30 @@ import AppKit
 extension CameraManager: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput,
                      didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        guard error == nil,
-              let data = photo.fileDataRepresentation() else { return }
+        guard let data = photo.fileDataRepresentation() else {
+            print("MacCam: No photo data")
+            return
+        }
 
-        let picturesURL = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
-        let macCamFolder = picturesURL.appendingPathComponent("MacCam")
-        try? FileManager.default.createDirectory(at: macCamFolder, withIntermediateDirectories: true)
-
+        let saveDir = SettingsManager.shared.saveDirectory
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd_HHmmss"
         let filename = "MacCam_\(formatter.string(from: Date())).jpg"
-        let fileURL = macCamFolder.appendingPathComponent(filename)
+        let fileURL = saveDir.appendingPathComponent(filename)
 
         do {
             try data.write(to: fileURL)
-            DispatchQueue.main.async { [weak self] in
-                self?.lastSavedURL = fileURL
-                self?.showSaveConfirmation = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    self?.showSaveConfirmation = false
-                }
-            }
+            print("MacCam: Saved \(fileURL.path)")
         } catch {
-            print("Failed to save photo: \(error)")
+            print("MacCam: Save failed - \(error)")
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.lastSavedURL = fileURL
+            self?.showSaveConfirmation = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self?.showSaveConfirmation = false
+            }
         }
     }
 }
