@@ -1,0 +1,31 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          swift build -c release
+
+          APP="MacCam.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+          cp .build/release/MacCam "$APP/Contents/MacOS/MacCam"
+          cp Resources/Info.plist "$APP/Contents/Info.plist"
+          echo -n "APPL????" > "$APP/Contents/PkgInfo"
+          codesign --force --sign - "$APP"
+
+          ditto -c -k --keepParent "$APP" MacCam.app.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: MacCam.app.zip
+          generate_release_notes: true
