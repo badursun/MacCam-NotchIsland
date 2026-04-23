@@ -17,6 +17,10 @@
     <string>APPL</string>
     <key>CFBundleExecutable</key>
     <string>MacCam</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>LSUIElement</key>
     <true/>
     <key>NSCameraUsageDescription</key>
