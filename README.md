@@ -15,6 +15,10 @@
   A lightweight, native macOS menu bar app that transforms the notch into a quick-access camera panel. Click the camera icon, and a sleek panel deploys from the notch with a smooth animation, showing your live camera feed. Snap a photo instantly.
 </p>
 
+<p align="center">
+  <img src="screen-shot-1.png" alt="MacCam Screenshot" width="720" />
+</p>
+
 ---
 
 ## Features
