@@ -103,12 +103,10 @@ class StatusBarController: NSObject {
             createBackdrop(screen: screen)
         }
 
-        let menuBarHeight = screen.frame.height
-            - screen.visibleFrame.height
-            - screen.visibleFrame.origin.y
+        let menuBarHeight = screen.frame.maxY - screen.visibleFrame.maxY
         let panelWidth = contentBodyWidth + sideGap * 2
-        let contentHeight: CGFloat = 420
-        let windowHeight = menuBarHeight + contentHeight
+        // Window covers from screen top to halfway — shape clips the visible area
+        let windowHeight = screen.frame.height / 2
 
         let frame = NSRect(
             x: screen.frame.midX - panelWidth / 2,

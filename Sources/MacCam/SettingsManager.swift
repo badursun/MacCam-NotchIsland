@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import ServiceManagement
 
 class SettingsManager: ObservableObject {
     static let shared = SettingsManager()
@@ -10,6 +11,22 @@ class SettingsManager: ObservableObject {
 
     @Published var backdropEnabled: Bool {
         didSet { UserDefaults.standard.set(backdropEnabled, forKey: "backdropEnabled") }
+    }
+
+    @Published var launchAtLogin: Bool = false {
+        didSet {
+            do {
+                if launchAtLogin {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                print("MacCam: Login item error - \(error)")
+                // Revert on failure
+                DispatchQueue.main.async { self.launchAtLogin = !self.launchAtLogin }
+            }
+        }
     }
 
     private init() {
@@ -27,6 +44,7 @@ class SettingsManager: ObservableObject {
             self.saveDirectory = desktop
         }
         self.backdropEnabled = UserDefaults.standard.object(forKey: "backdropEnabled") as? Bool ?? true
+        self.launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
     /// Set by StatusBarController so we can pause/resume monitors during NSOpenPanel

@@ -85,6 +85,17 @@ struct ContentView: View {
                                     .toggleStyle(.switch)
                                     .scaleEffect(0.8)
                             }
+
+                            // Launch at login toggle
+                            HStack {
+                                Text("Launch at Login")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Toggle("", isOn: $settings.launchAtLogin)
+                                    .toggleStyle(.switch)
+                                    .scaleEffect(0.8)
+                            }
                         }
                         .padding(12)
                         .background(Color.white.opacity(0.08))
