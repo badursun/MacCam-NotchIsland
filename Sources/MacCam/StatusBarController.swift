@@ -96,7 +96,7 @@ class StatusBarController: NSObject {
     }
 
     private func openNotch() {
-        guard let screen = NSScreen.main else { return }
+        guard let screen = NSScreen.screens.first ?? NSScreen.main else { return }
 
         // Backdrop (if enabled)
         if settings.backdropEnabled {
@@ -105,17 +105,9 @@ class StatusBarController: NSObject {
 
         let menuBarHeight = screen.frame.maxY - screen.visibleFrame.maxY
         let panelWidth = contentBodyWidth + sideGap * 2
-        // Window covers from screen top to halfway — shape clips the visible area
         let windowHeight = screen.frame.height / 2
 
-        let frame = NSRect(
-            x: screen.frame.midX - panelWidth / 2,
-            y: screen.frame.maxY - windowHeight,
-            width: panelWidth,
-            height: windowHeight
-        )
-
-        let window = NotchWindow(contentRect: frame)
+        let window = NotchWindow(contentRect: NSRect(x: 0, y: 0, width: panelWidth, height: windowHeight))
         window.hasShadow = false
 
         let view = ContentView(
@@ -125,6 +117,13 @@ class StatusBarController: NSObject {
             onClose: { [weak self] in self?.closeNotch() }
         )
         window.contentView = NSHostingView(rootView: view)
+
+        // Force position: top-left pinned to screen top center
+        let topLeft = NSPoint(
+            x: screen.frame.midX - panelWidth / 2,
+            y: screen.frame.maxY
+        )
+        window.setFrameTopLeftPoint(topLeft)
         window.orderFrontRegardless()
         notchWindow = window
 
